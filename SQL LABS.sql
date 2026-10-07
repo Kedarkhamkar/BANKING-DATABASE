@@ -807,3 +807,94 @@ on a.AccountID = t.AccountID
 where a.Balance > 30000 
 order by a.Balance desc;
 
+-- subqueries task lab 9 
+
+SELECT AVG(Amount)
+FROM Transactions;
+
+-- to identify transactions whose amount is greater than avg transaction amount
+
+select * from transactions where amount > (select avg(amount) from transactions);
+
+-- Task 2: Identify Accounts with Above-Average Balance
+
+SELECT
+    *
+FROM Accounts
+WHERE Balance >
+(
+    SELECT AVG(Balance)
+    FROM Accounts
+)
+ORDER BY Balance DESC;
+
+-- Task 3: Identify Deposit Accounts Using a Multi-Row Subquery  
+
+SELECT
+    AccountID,
+    AccountType,
+    Balance,
+    CustomerID
+FROM Accounts
+WHERE AccountID IN
+(
+    SELECT AccountID
+    FROM Transactions
+    WHERE TransactionType = 'Deposit'
+);
+
+-- Task 4: Identify the Account with the Highest Balance
+
+SELECT
+    AccountID,
+    AccountType,
+    Balance,
+    CustomerID
+FROM Accounts
+WHERE Balance =
+(
+    SELECT MAX(Balance)
+    FROM Accounts
+);
+
+select * from accounts;
+
+-- Develop Reporting Layer Using SQL Views
+
+CREATE VIEW High_Balance_Accounts AS
+SELECT
+    AccountID,
+    AccountType,
+    Balance,
+    CustomerID
+FROM Accounts
+WHERE Balance > 30000;
+
+select * from High_Balance_Accounts;
+
+
+	
+CREATE OR REPLACE VIEW High_Balance_Accounts AS
+SELECT
+    a.AccountID, a.AccountType, a.Balance, a.CustomerID,
+    t.TransactionID,
+    t.TransactionDate,
+    t.TransactionType,
+    t.Amount
+FROM Accounts a
+INNER JOIN Transactions t
+ON a.AccountID = t.AccountID
+WHERE a.Balance > 30000;
+
+SELECT
+    *
+FROM High_Balance_Accounts
+ORDER BY Balance DESC;
+
+describe High_Balance_Accounts;
+
+SELECT
+  *
+FROM High_Balance_Accounts
+ORDER BY Balance DESC;
+
